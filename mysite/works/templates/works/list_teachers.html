@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for f in faculty %}
+<h1>{{ f.1 }}</h1>
+
+
+<table class="table table-bordered table-hover">
+  <thead class="table-light">
+    <tr>
+      <th scope="col">ФИО</th>
+      <th scope="col">Занято мест/Max мест (3 курс)</th>
+      <th scope="col">Занято мест/Max мест (4 курс)</th>
+      <th scope="col">Занято мест/Max мест (Магистратура)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for teacher in teachers %}
+    {% if teacher.department == f.0 %}
+
+    <tr>
+      <th scope="row">{{ teacher.user.username }} {{ teacher.user.first_name }} {{ teacher.user.last_name }}</th>
+      <td>{{ teacher.current_amount_3_course }}/{{teacher.max_amount_3_course}}</td>
+      <td>{{ teacher.current_amount_4_course }}/{{teacher.max_amount_4_course}}</td>
+      <td>{{ teacher.current_amount_m }}/{{teacher.max_amount_m}}</td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endfor %}
+
+
+
+
+
+
+{% endblock content%}

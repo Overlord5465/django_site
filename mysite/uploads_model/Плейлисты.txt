@@ -1,0 +1,9 @@
+Основы: https://www.youtube.com/playlist?list=PLA0M1Bcd0w8yWHh2V70bTtbVxJICrnJHd
+
+ООП: https://youtube.com/playlist?list=PLA0M1Bcd0w8zPwP7t-FgwONhZOHt9rz9E
+
+Jinja: https://www.youtube.com/playlist?list=PLA0M1Bcd0w8wfmtElObQrBbZjY6XeA06U
+
+SQLite: https://www.youtube.com/playlist?list=PLA0M1Bcd0w8x4Inr5oYttMK6J47vxgv6J
+
+Django: https://www.youtube.com/playlist?list=PLA0M1Bcd0w8yU5h2vwZ4LO7h1xt8COUXl

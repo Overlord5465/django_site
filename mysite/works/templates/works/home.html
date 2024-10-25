@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<h1>HomePage</h1>
+
+<form action="{% url 'home' %}" method="get">
+  {% csrf_token %}
+  <input name="q" type="text" placeholder="Search...">
+  <button type="submit">найти</button>
+</form>
+
+
+<h1>Search Results</h1>
+<ul>
+  {% for work in object_list %}
+    <li>
+      <p>Название работы: {{ work.name }}</p>
+      <p>Описание работы: {{ work.description }}</p>
+      <p>Тип работы: {{ work.type_of_work }}</p>
+      <p>Год: {{ work.year.year }}</p>
+      <p>Файл: {{ work.file_word }}</p>
+      <p>Автор: {{ work.author }}</p>
+      <p>Научный руководитель: {{ work.scientific_director }}</p>
+    </li>
+    <hr>
+  {% endfor %}
+</ul>
+
+
+
+
+
+
+{% endblock content%}
