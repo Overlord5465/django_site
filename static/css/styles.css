@@ -1,0 +1,75 @@
+#background{
+    z-index: -10;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-image: url(../images/entrance.png);
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+header, footer{
+    height: 90px;
+    padding: 10px;
+    display: flex;
+    background: linear-gradient(85deg, rgba(13, 0, 255, 0.7), rgba(0, 195, 255, 0.7));
+  }
+header{
+    border-bottom: 1px solid rgba(0, 100, 255, 0.7);
+}
+header a {
+    border: 1px solid white;
+    border-radius: 35px;
+    box-shadow: 4px 4px rgba(0, 0, 0, 0.1),
+    5px 5px rgba(0, 0, 0, 0.2),
+    6px 6px rgba(0, 0, 0, 0.3);
+}
+header div{
+    margin-right: auto;
+}
+footer{
+    bottom: 0;
+    border-top: 1px solid rgba(0, 100, 255, 0.7);
+  }
+.panel{
+margin-top: 100px;
+margin-bottom: 100px;
+padding: 30px;
+background-color: rgba(240,240,240,0.9);
+border: 1px solid black;
+    border-radius: 35px;
+}
+.mini-panel{
+margin-top: 20px;
+margin-bottom: 20px;
+padding: 20px;
+padding-left: 50px;
+background-color: rgba(250,250,250,0.9);
+border: 1px solid black;
+    border-radius: 35px;
+}
+
+form input{
+width: 200px;
+}
+
+.search{
+    background-image: url('../images/search-normal.png');
+    width: 46px;
+    height: 46px;
+    border-right: 1px solid black;
+    background-repeat: no-repeat;
+    padding-right: 70px;
+}
+#search{
+    margin-left: 40px;
+}
+.docx{
+    background-image: url('../images/docx.png');
+    width: 78px;
+    height: 78px;
+    background-repeat: no-repeat;
+}
+p, a, input, button{
+    font-size: 1.2rem;
+}
