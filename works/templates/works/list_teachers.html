@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h6>Бакалавриат</h6>
+<p>01.03.02 - Прикладная математика и информатика</p>
+<p>02.03.02 - Фундаментальная информатика и информационные технологии</p>
+<p>02.03.03 - Математическое обеспечение и администрирование информационных систем</p>
+<p>09.03.03 - Прикладная информатика</p>
+<h6>Магистратура</h6>
+<p>01.04.02 - Прикладная математика и информатика</p>
+<p>02.04.02 - Фундаментальная информатика и информационные технологии</p>
+<p>09.04.02 - Информационные системы и технологии</p>
+
+{% for f in faculty %}
+<h1>{{ f.1 }}</h1>
+
+
+<table class="table table-bordered table-hover">
+  <thead class="table-light">
+    <tr>
+      <th scope="col">ФИО</th>
+      <th scope="col">01.03.02</th>
+      <th scope="col">02.03.02</th>
+      <th scope="col">02.03.03</th>
+      <th scope="col">09.03.03</th>
+      <th scope="col">01.04.02</th>
+      <th scope="col">02.04.02</th>
+      <th scope="col">09.04.02</th>
+    </tr>
+  </thead>
+  <tbody class="table-active">
+    {% for teacher in teachers %}
+    {% if teacher.department == f.0 %}
+    <tr>
+      <th scope="row">{{teacher.user.first_name }}</th>
+      {% for number in number_of_seats %}
+      {% if number.teacher == teacher and number.direction_of_study.direction_code == "01.03.02"%}
+      <td>{{ number.current_amount }}/{{ number.max_amount }}</td>
+      {% endif %}
+      {% endfor %}
+
+      {% for number in number_of_seats %}
+      {% if number.teacher == teacher and number.direction_of_study.direction_code == "02.03.02"%}
+      <td>{{ number.current_amount }}/{{ number.max_amount }}</td>
+      {% endif %}
+      {% endfor %}
+
+      {% for number in number_of_seats %}
+      {% if number.teacher == teacher and number.direction_of_study.direction_code == "02.03.03"%}
+      <td>{{ number.current_amount }}/{{ number.max_amount }}</td>
+      {% endif %}
+      {% endfor %}
+
+      {% for number in number_of_seats %}
+      {% if number.teacher == teacher and number.direction_of_study.direction_code == "09.03.03"%}
+      <td>{{ number.current_amount }}/{{ number.max_amount }}</td>
+      {% endif %}
+      {% endfor %}
+
+      {% for number in number_of_seats %}
+      {% if number.teacher == teacher and number.direction_of_study.direction_code == "01.04.02"%}
+      <td>{{ number.current_amount }}/{{ number.max_amount }}</td>
+      {% endif %}
+      {% endfor %}
+
+      {% for number in number_of_seats %}
+      {% if number.teacher == teacher and number.direction_of_study.direction_code == "02.04.02"%}
+      <td>{{ number.current_amount }}/{{ number.max_amount }}</td>
+      {% endif %}
+      {% endfor %}
+
+      {% for number in number_of_seats %}
+      {% if number.teacher == teacher and number.direction_of_study.direction_code == "09.04.02"%}
+      <td>{{ number.current_amount }}/{{ number.max_amount }}</td>
+      {% endif %}
+      {% endfor %}
+
+    </tr>
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endfor %}
+
+{% endblock content%}

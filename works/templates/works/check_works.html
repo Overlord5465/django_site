@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<h1>List works</h1>
+<ul>
+  {% for student in students %}
+    <li>
+      <p>ФИО: {{ student.user.first_name }}</p>
+      <p>Группа: {{ student.group }}</p>
+      <p>Направление: {{ student.group.direction_of_study }}
+        ({{ student.group.direction_of_study.direction_code }})</p>
+    </li>
+
+    <ul>
+    {% for work in works %}
+      {% if work.author == student %}
+        <li>
+          <p>Тип работы: {{ work.type_of_work }}</p>
+          <p>Тема: {{ work.name }}</p>
+          <p>Описание: {{ work.description }}</p>
+          <p>Автор: {{ work.author }}</p>
+          <p>Научный руководитель: {{ work.scientific_director }}</p>
+          <p>Последняя версия работы: {{ work.file_word }}</p>
+        </li>
+      <hr>
+      {% endif %}
+      {% endfor %}
+
+
+    </ul>
+
+    <hr>
+  {% endfor %}
+</ul>
+
+
+
+
+
+
+{% endblock content%}
