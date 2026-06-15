@@ -1,0 +1,743 @@
+#background{
+    z-index: -10;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-image: url(../images/entrance.png);
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+header, footer{
+    height: 90px;
+    padding: 10px;
+    display: flex;
+    background: linear-gradient(85deg, rgba(13, 0, 255, 0.7), rgba(0, 195, 255, 0.7));
+  }
+header{
+    border-bottom: 1px solid rgba(0, 100, 255, 0.7);
+}
+header a,
+header button.nav-link {
+    border: 1px solid white;
+    border-radius: 35px;
+    box-shadow: 4px 4px rgba(0, 0, 0, 0.1),
+    5px 5px rgba(0, 0, 0, 0.2),
+    6px 6px rgba(0, 0, 0, 0.3);
+}
+header button.nav-link {
+    background: transparent;
+    padding: 0.5rem 0.75rem; /* приблизить к .nav-link */
+    cursor: pointer;
+}
+header button.nav-link:focus {
+    outline: none;
+    box-shadow: 4px 4px rgba(0, 0, 0, 0.1),
+    5px 5px rgba(0, 0, 0, 0.2),
+    6px 6px rgba(0, 0, 0, 0.3);
+}
+header .logo-img{
+    margin-right: auto;
+}
+footer{
+    bottom: 0;
+    border-top: 1px solid rgba(0, 100, 255, 0.7);
+  }
+.panel{
+margin-top: 100px;
+margin-bottom: 100px;
+padding: 30px;
+background-color: rgba(240,240,240,0.9);
+border: 1px solid black;
+    border-radius: 35px;
+}
+.mini-panel{
+margin-top: 20px;
+margin-bottom: 20px;
+padding: 20px 50px;
+background-color: rgba(250,250,250,0.9);
+border: 1px solid black;
+    border-radius: 35px;
+}
+
+/* Не фиксируем ширину инпутов глобально — ломает мобильную вёрстку */
+.form-input,
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form select {
+    max-width: 100%;
+}
+
+/* Улучшение визуала внутри серых областей (не трогаем сами панели) */
+.panel .form-label,
+.mini-panel .form-label {
+    font-weight: 600;
+}
+.panel .form-control,
+.panel .form-select,
+.mini-panel .form-control,
+.mini-panel .form-select {
+    border-radius: 12px;
+}
+.panel .btn,
+.mini-panel .btn {
+    border-radius: 14px;
+}
+.panel hr,
+.mini-panel hr {
+    opacity: 0.15;
+}
+
+/* Заявки студентов: карточки внутри серой панели */
+.panel .topic-applications-page .topic-app-card {
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 18px;
+    border-left: 4px solid rgba(13, 110, 253, 0.45);
+    box-shadow: 0 0.15rem 0.6rem rgba(0, 0, 0, 0.06);
+}
+.panel .topic-applications-page .topic-apps-section-title {
+    color: #2c3e50;
+    border-color: rgba(0, 0, 0, 0.12) !important;
+}
+.panel .topic-applications-page .topic-app-label {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6c757d;
+    font-weight: 600;
+    margin-bottom: 0.15rem;
+}
+.panel .topic-applications-page .topic-app-value {
+    color: #212529;
+    line-height: 1.35;
+}
+.panel .topic-applications-page .topic-app-topic {
+    background: rgba(248, 249, 250, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.panel .topic-applications-page .topic-app-meta {
+    font-size: 0.8rem;
+}
+
+/* План (дедлайны) на странице проверки работы: визуальное разграничение этапов */
+.panel .plan-stages-list .plan-stage-item-inner {
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-left: 4px solid rgba(25, 135, 84, 0.75);
+    border-radius: 14px;
+    padding: 1rem 1.15rem;
+    box-shadow: 0 0.2rem 0.65rem rgba(0, 0, 0, 0.07);
+}
+.panel .plan-stages-list .plan-stage-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+.panel .plan-stages-list .plan-stage-fields {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(248, 249, 250, 0.85);
+    margin-left: -1.15rem;
+    margin-right: -1.15rem;
+    margin-bottom: -1rem;
+    padding-left: 1.15rem;
+    padding-right: 1.15rem;
+    padding-bottom: 1rem;
+    border-radius: 0 0 12px 12px;
+}
+.panel .plan-stages-list .plan-stage-toolbar {
+    padding-bottom: 0.15rem;
+}
+
+/* План (дедлайны) у студента: те же карточки, нижняя полоса только под действие/статус */
+.panel .plan-stages-list--student .plan-stage-student-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(248, 249, 250, 0.85);
+    margin-left: -1.15rem;
+    margin-right: -1.15rem;
+    margin-bottom: -1rem;
+    margin-top: 0.75rem;
+    padding: 0.85rem 1.15rem 1rem;
+    border-radius: 0 0 12px 12px;
+}
+.panel .plan-stages-list--student .plan-stage-student-footer .btn {
+    border-radius: 10px;
+}
+
+/* Индикатор выполнения плана: дорожка + процент по центру внутри полоски */
+.plan-progress-wrap {
+    width: 100%;
+}
+.plan-progress-track {
+    height: 1.55rem !important;
+    background-color: #dde1e6 !important;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 999px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+}
+.plan-progress-track .progress-bar {
+    border-radius: 999px;
+    position: relative;
+    z-index: 1;
+}
+.plan-progress-pct-inside {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.98rem;
+    line-height: 1;
+    color: #243038;
+    pointer-events: none;
+    z-index: 2;
+    text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 1px 1px rgba(255, 255, 255, 0.9);
+}
+
+/* Список преподавателей кафедры: ФИО и кнопка «Студенты» */
+.panel .department-teachers-table {
+    --dept-teachers-bg: rgba(255, 255, 255, 0.65);
+    background: var(--dept-teachers-bg);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.panel .department-teachers-table thead th {
+    vertical-align: middle;
+    white-space: nowrap;
+}
+.panel .department-teachers-table tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.06);
+}
+.panel .department-teachers-table .dept-teachers-fio-cell {
+    font-weight: 600;
+    color: #1e3a4c;
+    min-width: 11rem;
+}
+.panel .department-teachers-table .dept-teachers-action-cell {
+    white-space: nowrap;
+    width: 1%;
+}
+.panel .department-teachers-table .dept-teacher-students-btn {
+    font-weight: 600;
+    border-width: 2px;
+    min-width: 6.5rem;
+}
+.panel .department-teachers-table .dept-teacher-students-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(13, 110, 253, 0.25);
+}
+.panel .department-teachers-table .dept-teachers-limit-input {
+    border-radius: 8px;
+}
+
+/* Страница «Студенты» у преподавателя (кафедра): карточки и этапы */
+.panel .department-teacher-detail {
+    max-width: 52rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+.panel .department-teacher-detail-header .h3 {
+    color: #1e3a4c;
+    font-weight: 700;
+}
+.panel .dept-teacher-student-card {
+    border-radius: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+}
+.panel .dept-teacher-student-card__head {
+    background: linear-gradient(180deg, rgba(248, 250, 252, 0.98) 0%, rgba(255, 255, 255, 0.96) 100%);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+.panel .dept-teacher-student-card__head .h5 {
+    color: #1e3a4c;
+    font-weight: 600;
+}
+.panel .dept-teacher-detail-dl dt {
+    color: #5c6570;
+    font-weight: 600;
+}
+.panel .dept-teacher-detail-dl dd {
+    margin-bottom: 0.65rem;
+}
+.panel .dept-teacher-detail-dl dd:last-of-type {
+    margin-bottom: 0;
+}
+.panel .dept-teacher-detail-section-label {
+    letter-spacing: 0.04em;
+    font-size: 0.72rem !important;
+}
+.panel .dept-teacher-stages {
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+    background: rgba(248, 250, 252, 0.65);
+}
+.panel .dept-teacher-stage-item {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    padding-top: 0.6rem !important;
+    padding-bottom: 0.6rem !important;
+    padding-left: 0.85rem !important;
+    padding-right: 0.85rem !important;
+    background: transparent;
+}
+.panel .dept-teacher-stage-item:last-child {
+    border-bottom: none !important;
+}
+
+/* Архив работ: нет результатов по фильтру — заметный блок на фоне страницы */
+.archive-empty-filter {
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    background: #fff3cd !important;
+    border: 1px solid #e0a800 !important;
+    color: #212529;
+}
+
+.search{
+    background-image: url('../images/search-normal.png');
+    width: 46px;
+    height: 46px;
+    border-right: 1px solid black;
+    background-repeat: no-repeat;
+    padding-right: 70px;
+}
+#search{
+    margin-left: 40px;
+}
+
+@media (max-width: 768px) {
+    header, footer {
+        height: auto;
+    }
+    #search {
+        margin-left: 0;
+    }
+    .panel {
+        margin-top: 30px;
+        margin-bottom: 30px;
+        padding: 20px;
+    }
+    p, a, input, button {
+        font-size: 1rem;
+    }
+}
+.archive-work-icon{
+    --awi-size: 92px;
+    width: var(--awi-size);
+    height: var(--awi-size);
+    display: grid;
+    place-items: center;
+    color: rgba(33, 37, 41, 0.82);
+    line-height: 0;
+    border-radius: 22px;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    background:
+      radial-gradient(120px 120px at 30% 25%, rgba(0, 0, 0, 0.14), transparent 58%),
+      radial-gradient(120px 120px at 70% 80%, rgba(0, 0, 0, 0.10), transparent 60%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(236, 238, 242, 0.98));
+    box-shadow:
+      0 12px 26px rgba(0, 0, 0, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    transition: none;
+}
+.archive-work-icon svg{
+    width: 76px;
+    height: 76px;
+}
+
+/* Архив: две панели в колонке с фиксированным gap (margin .panel между ними схлопывался) */
+.archive-home-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 2.75rem;
+    margin-top: 100px;
+    margin-bottom: 100px;
+}
+.archive-home-layout > .panel.archive-home-filters,
+.archive-home-layout > .panel.archive-works-list-panel {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+@media (max-width: 768px) {
+    .archive-home-layout {
+        margin-top: 30px;
+        margin-bottom: 30px;
+        gap: 2rem;
+    }
+}
+
+/* Архив: одна серая панель на все карточки; между ними — gap-1 в шаблоне */
+.archive-works-list-panel .archive-work-row {
+    padding: 0;
+    margin: 0;
+}
+.archive-works-list-panel .archive-work-card-inner {
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid rgba(0, 0, 0, 0.09);
+    border-left: 4px solid rgba(13, 110, 253, 0.5);
+    border-radius: 18px;
+    padding: 1.25rem 1.35rem;
+    box-shadow: 0 0.2rem 0.75rem rgba(0, 0, 0, 0.07);
+}
+.archive-works-list-panel .archive-work-title {
+    color: #1a1d21;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+}
+.archive-works-list-panel .archive-work-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+    gap: 0.65rem 1.25rem;
+}
+.archive-works-list-panel .archive-work-meta-item dt {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 0.15rem;
+}
+.archive-works-list-panel .archive-work-meta-item dd {
+    margin: 0;
+    color: #212529;
+    line-height: 1.35;
+    word-break: break-word;
+}
+.archive-works-list-panel .archive-work-desc {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+.archive-works-list-panel .archive-work-desc-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 0.4rem;
+}
+.archive-works-list-panel .archive-work-desc-text {
+    color: #343a40;
+    line-height: 1.5;
+    font-size: 0.98rem;
+}
+.archive-works-list-panel .archive-work-aside {
+    border-left: 1px solid rgba(0, 0, 0, 0.07);
+    min-height: 8rem;
+}
+@media (max-width: 991.98px) {
+    .archive-works-list-panel .archive-work-aside {
+        border-left: none;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        padding-top: 1rem !important;
+        margin-top: 0.25rem;
+        min-height: 0;
+    }
+}
+
+/* Банк тем: аккуратные карточки внутри панели */
+.panel .topic-bank-page .topic-bank-section-title{
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+.panel .topic-bank-page .topic-bank-list{
+    display: grid;
+    gap: 0.85rem;
+}
+.panel .topic-bank-page .topic-bank-card{
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    border-left: 4px solid rgba(13, 110, 253, 0.55);
+    border-radius: 16px;
+    padding: 1rem 1.1rem;
+    box-shadow: 0 0.2rem 0.7rem rgba(0, 0, 0, 0.06);
+}
+.panel .topic-bank-page .topic-bank-title{
+    font-weight: 700;
+    line-height: 1.25;
+}
+.panel .topic-bank-page .topic-bank-desc{
+    color: rgba(33, 37, 41, 0.88);
+    line-height: 1.35;
+}
+
+/* Проверить работы (преподаватель): карточки студентов */
+.panel .check-works-page .check-works-list{
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.panel .check-works-page .check-works-card{
+    list-style: none;
+}
+.panel .check-works-page .check-works-card-inner{
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    border-left: 4px solid rgba(25, 135, 84, 0.65);
+    border-radius: 16px;
+    padding: 1.1rem 1.25rem;
+    box-shadow: 0 0.2rem 0.65rem rgba(0, 0, 0, 0.06);
+}
+.panel .check-works-page .check-works-fields{
+    display: grid;
+    gap: 0.5rem;
+}
+.panel .check-works-page .check-works-row{
+    display: grid;
+    grid-template-columns: minmax(7rem, 10rem) 1fr;
+    gap: 0.75rem 1rem;
+    align-items: baseline;
+}
+@media (max-width: 576px) {
+    .panel .check-works-page .check-works-row{
+        grid-template-columns: 1fr;
+        gap: 0.15rem;
+    }
+}
+.panel .check-works-page .check-works-label{
+    display: block;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: #6c757d;
+}
+.panel .check-works-page .check-works-value{
+    color: #212529;
+    line-height: 1.35;
+    word-break: break-word;
+}
+.panel .check-works-page .check-works-actions{
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+.panel .check-works-page .check-works-empty{
+    border: 1px dashed rgba(0, 0, 0, 0.12);
+    border-radius: 14px;
+    background: rgba(248, 249, 250, 0.65);
+}
+
+/* Решение по заявке / предложенной теме */
+.panel .proposal-decide-page .proposal-decide-summary{
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    padding: 1.15rem 1.35rem;
+    box-shadow: 0 0.15rem 0.55rem rgba(0, 0, 0, 0.06);
+}
+/* Форма решения — уже, карточка с темой/студентом — на всю ширину */
+.panel .proposal-decide-page .proposal-decide-form{
+    max-width: 20rem;
+}
+.panel .proposal-decide-page .proposal-decide-dl{
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+.panel .proposal-decide-page .proposal-decide-row{
+    display: grid;
+    grid-template-columns: minmax(6rem, 8.5rem) 1fr;
+    gap: 0.5rem 1rem;
+    align-items: baseline;
+}
+@media (max-width: 576px) {
+    .panel .proposal-decide-page .proposal-decide-row{
+        grid-template-columns: 1fr;
+    }
+}
+.panel .proposal-decide-page .proposal-decide-row dt{
+    margin: 0;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: #6c757d;
+}
+.panel .proposal-decide-page .proposal-decide-row dd{
+    color: #212529;
+    line-height: 1.45;
+    word-break: break-word;
+}
+.panel .proposal-decide-page .proposal-decide-form select{
+    border-radius: 10px;
+    max-width: 100%;
+    width: 100%;
+}
+.panel .proposal-decide-page .proposal-decide-form textarea{
+    border-radius: 12px;
+    min-height: 5rem;
+    max-width: 100%;
+    width: 100%;
+}
+p, a, input, button{
+    font-size: 1.2rem;
+}
+
+.chat-bubble-self {
+    background: #e8f4fc !important;
+    color: #1a1a1a !important;
+    border: 1px solid #b8d4ea;
+}
+.chat-bubble-peer {
+    background: #f4f6f8 !important;
+    color: #1a1a1a !important;
+    border: 1px solid #dee2e6;
+}
+.chat-bubble-self small,
+.chat-bubble-peer small {
+    color: #5c636a !important;
+}
+
+/* Чат: разделители по дням как в VK */
+.chat-day-sep{
+    display: flex;
+    justify-content: center;
+    margin: 0.65rem 0 0.85rem;
+}
+.chat-day-sep > span{
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    padding: 0.18rem 0.65rem;
+    border-radius: 999px;
+    color: rgba(33, 37, 41, 0.62);
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+    backdrop-filter: blur(3px);
+}
+
+/* Страница чата: почти на всю высоту между header и fixed footer */
+.chat-page-wrap {
+    --chat-outside-gap: 0.75rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    /* Одинаковый зазор до header и до footer (сумма двух margin вычитается из высоты) */
+    margin-top: var(--chat-outside-gap);
+    margin-bottom: var(--chat-outside-gap);
+    padding: 0;
+    height: calc(100vh - 90px - 90px - var(--chat-outside-gap) - var(--chat-outside-gap));
+    max-height: calc(100vh - 90px - 90px - var(--chat-outside-gap) - var(--chat-outside-gap));
+    min-height: calc(100vh - 90px - 90px - var(--chat-outside-gap) - var(--chat-outside-gap));
+}
+
+.chat-page-inner {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-page-row {
+    flex: 1 1 auto;
+    min-height: 0;
+    align-items: stretch;
+}
+
+.chat-sidebar-card,
+.chat-main-card {
+    min-height: 0;
+}
+
+.chat-sidebar-card {
+    height: auto;
+}
+
+.chat-sidebar-scroll {
+    min-height: 0;
+    max-height: min(50vh, calc(100vh - 220px));
+}
+
+/* Выбранный студент: не primary как у заголовка «Мои студенты», а светлый блок + акцент слева */
+.chat-sidebar-card .chat-sidebar-student--selected {
+    background-color: #e8f4fc;
+    color: #0a3d62;
+    font-weight: 600;
+    box-shadow: inset 4px 0 0 #0f766e;
+}
+.chat-sidebar-card .chat-sidebar-student--selected:hover,
+.chat-sidebar-card .chat-sidebar-student--selected:focus {
+    background-color: #d8ebf8;
+    color: #062a45;
+}
+
+@media (max-width: 768px) {
+    .chat-page-wrap {
+        --chat-outside-gap: 0.625rem;
+        height: calc(100vh - 120px - 90px - var(--chat-outside-gap) - var(--chat-outside-gap));
+        max-height: calc(100vh - 120px - 90px - var(--chat-outside-gap) - var(--chat-outside-gap));
+        min-height: calc(100vh - 120px - 90px - var(--chat-outside-gap) - var(--chat-outside-gap));
+    }
+}
+
+/* Архив работ: список тегов выпадает поверх контента, не раздвигая строку фильтра */
+.archive-tag-filter {
+    position: relative;
+    z-index: 1;
+    overflow: visible;
+}
+.archive-tag-filter[open] {
+    z-index: 1060;
+}
+.archive-tag-filter > .archive-tag-scroll {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    margin-top: 0.25rem;
+    z-index: 1060;
+    max-height: 12rem;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 0.375rem;
+    box-shadow: 0 0.35rem 1rem rgba(0, 0, 0, 0.12);
+    /* прокрутка списка не обрезает чекбоксы слева (Bootstrap form-check + overflow) */
+    padding-left: 1.25rem;
+    padding-right: 0.5rem;
+}
+
+/* Формы «Предложить свою тему», «Новая тема в банке» — единая ширина полей */
+.form-card-panel {
+    max-width: 48rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+.form-card-panel p {
+    max-width: 100%;
+}
+.form-card-panel select,
+.form-card-panel textarea,
+.form-card-panel input[type="text"],
+.form-card-panel input[type="number"],
+.form-card-panel input[type="email"],
+.form-card-panel input[type="password"] {
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Страница создания темы: заметное скругление полей (Bootstrap + свои виджеты) */
+.topic-create-form .form-control,
+.topic-create-form .form-select {
+    border-radius: 18px;
+}
+.topic-create-form .btn {
+    border-radius: 18px;
+}

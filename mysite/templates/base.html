@@ -1,0 +1,231 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>{% block title %} my site {% endblock %}</title>
+</head>
+<body>
+<div id="background"></div>
+{% block header %}
+	<div class="p-0 m-0">
+        <header class="d-flex align-items-center py-3 flex-wrap gap-2">
+          <div class="logo-img col-auto flex-shrink-0">
+                    <a href="/ru" rel="home" title="Кубанский государственный университет"
+                       style="border: None; box-shadow: None;"><img
+                            src="https://www.kubsu.ru/sites/all/themes/portal_kubsu/logo.png" alt="Кубанский государственный университет" id="logo" /></a>
+          </div>
+
+            <nav class="d-flex flex-grow-1 justify-content-center align-items-center min-w-0">
+            <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
+
+
+              {% if user.is_authenticated %}
+                            <div><a href="{% url 'profiles:edit_profile' %}"
+                   class="nav-link px-2 link-light">Профиль</a></div>
+                  {% if user.user_type == 'teacher' or user.user_type == 'department_admin' %}
+                  <div>
+                      <a href="{% url 'check_works' %}"
+                         class="nav-link px-2 link-light">Проверить работы</a>
+                  </div>
+                  {% elif user.user_type == 'student' and user.student and user.student.scientific_director %}
+                  <div>
+                      <a href="{% url 'write_work' %}"
+                         class="nav-link px-2 link-light">Писать работу</a>
+                  </div>
+                  {% endif %}
+              {% else %}
+                            <div><a href="{% url 'profiles:login' %}"
+                   class="nav-link px-2 link-light">Профиль</a></div>
+              {% endif %}
+
+
+            <div><a href="{% url 'home' %}"
+                   class="nav-link px-2 link-light">Архив
+                работ</a></div>
+            {% if user.is_authenticated %}
+                <div><a href="{% url 'topic_bank' %}" class="nav-link px-2 link-light">Темы</a></div>
+                <div class="position-relative d-inline-block">
+                    <a href="{% url 'notifications' %}" class="nav-link px-2 link-light">Уведомления</a>
+                    {% if unread_notifications_count %}
+                    <span class="position-absolute text-warning" title="Есть непрочитанные" style="top: -6px; right: 2px; font-size: 1.4rem; font-weight: 800; line-height: 1; pointer-events: none;">!</span>
+                    {% endif %}
+                </div>
+                {% if user.user_type != 'student' %}
+                <div><a href="{% url 'chat' %}"
+       class="nav-link px-2 link-light">Чат</a></div>
+                {% elif user.student and user.student.scientific_director %}
+                <div><a href="{% url 'chat' %}"
+       class="nav-link px-2 link-light">Чат</a></div>
+                {% endif %}
+                  {% if user.user_type == 'department_admin' %}
+                  <div class="">
+                      <a href="{% url 'department_stats' %}"
+                         class="nav-link px-2 link-light">Прогресс работ</a>
+                  </div>
+                  <div class="">
+                      <a href="{% url 'department_teachers' %}"
+                         class="nav-link px-2 link-light">Список преподавателей кафедры</a>
+                  </div>
+                  <div class="">
+                      <a href="{% url 'department_send_announcement' %}"
+                         class="nav-link px-2 link-light">Уведомление студентам</a>
+                  </div>
+                  {% endif %}
+                  {% if user.user_type == 'teacher' or user.user_type == 'department_admin' %}
+                  <div class="">
+                      <a href="{% url 'topic_applications' %}"
+                         class="nav-link px-2 link-light">Заявки
+                          студентов</a>
+                  </div>
+                  {% else %}
+                  <div class=""><a href="{% url 'list_teacher' %}"
+                   class="nav-link px-2 link-light">Список
+                преподавателей</a></div>
+                  {% endif %}
+            {% endif %}
+            <div class="">
+                <a href="https://vk.com/away.php?utf=1&to=https%3A%2F%2Fwww.kubsu.ru%2Fsites%2Fdefault%2Ffiles%2Finsert%2Fpage%2Fuchebno-metodicheskie_ukazaniya_struktura_i_oformlenie_bakalavrskoy_diplomnoy_kursovoy_rabot_i_magisterskoy_dissertacii.pdf" class="nav-link px-2 link-light">Правила
+                оформления работ</a></div>
+
+            {% if user.is_authenticated %}
+
+
+
+              <div>
+                <form method="post" action="{% url 'profiles:logout' %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="nav-link px-2 link-light logout-btn">Выйти</button>
+                </form>
+              </div>
+			{% else %}
+              <div>
+                        <a href="{% url 'profiles:register' %}" class="nav-link px-2 link-light">Регистрация</a>
+                </div>
+                <div style="margin-right: 10px;">
+                        <a href="{% url 'profiles:login' %}" class="nav-link px-2 link-light">Вход</a>
+                    </div>
+			{% endif %}
+
+            </div>
+            </nav>
+
+
+        </header>
+    </div>
+
+
+
+
+{% endblock header %}
+<div class="{% block page_container_class %}container{% endblock %}">
+
+
+
+{% block left_sidebar %}
+
+{% endblock left_sidebar %}
+
+
+
+    <div style="min-height: 450px">
+{% block main %}
+        <div class="container panel">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert {% if 'success' in message.tags %}alert-success{% elif 'error' in message.tags %}alert-danger{% elif 'warning' in message.tags %}alert-warning{% else %}alert-info{% endif %} mb-2" role="alert">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+{% block content %}
+
+{% endblock content%}
+            </div>
+{% endblock main%}
+    </div>
+
+
+
+
+{% block right_sidebar %}
+
+{% endblock right_sidebar %}
+
+
+
+
+
+
+</div>
+{% block footer %}
+<div class="fixed-bottom">
+        <footer
+                class="row row-cols-1 row-cols-sm-2 row-cols-md-5 m-0" width="100vw">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </footer>
+</div>
+{% endblock footer %}
+
+</body>
+</html>
