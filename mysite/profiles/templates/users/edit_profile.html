@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="text-center">Профиль</h1>
+<br>
+<div class="form-error">{{ form.non_field_errors }}</div>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        {{ user_form.as_p }}
+    </div>
+    {% if user.teacher %}
+    <div class="mb-3">
+        <div class="form-control bg-light border rounded px-3 py-2 text-body">
+            {{ user.teacher.department|default:"—" }}
+        </div>
+    </div>
+    {% endif %}
+    {% if profile_form %}
+    {% for f in profile_form %}
+    <div class="mb-3">
+        <label class="form-label" for="{{ f.id_for_label }}">{{f.label}} </label>
+        {{ f }}
+        <div class="form-error">{{ f.errors }}</div>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% if student_group %}
+    <div class="mb-3">
+        <label class="form-label">Группа</label>
+        <div class="form-control bg-light border rounded px-3 py-2 text-body">
+            {{ student_group.group_number }}
+        </div>
+    </div>
+    {% endif %}
+    {% if student_course_line %}
+    <p class="text-muted">{{ student_course_line }}</p>
+    {% endif %}
+    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+</form>
+
+{% if teacher_seats %}
+<hr>
+<h2 class="h5">Лимит студентов по курсам</h2>
+{% if user.user_type != 'department_admin' %}
+<p class="text-muted small">Для изменения лимитов обратитесь к администратору кафедры</p>
+{% endif %}
+<table class="table table-sm table-bordered bg-white">
+  <thead><tr><th>Курс</th><th>Занято</th><th>Лимит</th></tr></thead>
+  <tbody>
+    {% for row in teacher_seats %}
+    <tr>
+      <td>{{ row.get_bucket_display }}</td>
+      <td>{{ row.current_amount }}</td>
+      <td>{{ row.max_amount }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="3">Данные о лимитах не заданы.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<hr>
+<p><a href="{% url 'profiles:password_change' %}" class="btn btn-outline-primary btn-sm">Сменить пароль</a></p>
+
+{% endblock content%}
+
