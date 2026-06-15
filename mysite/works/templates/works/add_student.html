@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load works_extras %}
+
+{% block main %}
+
+
+<div class="panel d-flex  align-items-center">
+  <div class="search"></div>
+<form action="{% url 'add_student' %}" method="get">
+  {% csrf_token %}
+  <input id="search" name="q" type="text" placeholder="Введите запрос">
+  <button type="submit">найти</button>
+</form>
+</div>
+
+
+{% if request.user.user_type == 'teacher' %}
+  {% for app in applications %}
+<div class="panel">
+      <div >
+        <p>ФИО: {{ app.student.user|user_fio }}</p>
+      </div >
+      <div >
+        <p>Группа: {{ app.student.group }}</p>
+      </div>
+      <div>
+        <p>Курс: {{ app.student|student_course_line }}</p>
+      </div>
+      <div>
+        <p>Направление: {{ app.student.group.direction_of_study }}
+        ({{ app.student.group.direction_of_study.direction_code }})</p>
+      </div>
+      <div>
+        <p>Тема заявки: <strong>{{ app.topic.title }}</strong> ({{ app.topic.get_work_kind_display }})</p>
+      </div>
+      <div>
+        <form method="post" action="{% url 'check_works' %}">
+    {% csrf_token %}
+     <input type="hidden" name="student_id" value="{{ app.student.id }}">
+     <button type="submit">Добавить</button>
+  </form>
+      </div>
+  </div>
+  {% endfor %}
+  {% for prop in topic_proposals %}
+<div class="panel">
+      <div >
+        <p>ФИО: {{ prop.student.user|user_fio }}</p>
+      </div >
+      <div >
+        <p>Группа: {{ prop.student.group }}</p>
+      </div>
+      <div>
+        <p>Курс: {{ prop.student|student_course_line }}</p>
+      </div>
+      <div>
+        <p>Направление: {{ prop.student.group.direction_of_study }}
+        ({{ prop.student.group.direction_of_study.direction_code }})</p>
+      </div>
+      <div>
+        <p>Предложенная тема: <strong>{{ prop.title }}</strong></p>
+        <p class="small">{{ prop.description|linebreaksbr }}</p>
+      </div>
+      <div>
+        <form method="post" action="{% url 'check_works' %}">
+    {% csrf_token %}
+     <input type="hidden" name="student_id" value="{{ prop.student.id }}">
+     <input type="hidden" name="proposal_id" value="{{ prop.id }}">
+     <button type="submit">Добавить</button>
+  </form>
+      </div>
+  </div>
+  {% endfor %}
+{% else %}
+  {% for student in object_list %}
+<div class="panel">
+      <div >
+        <p>ФИО: {{ student.user|user_fio }}</p>
+      </div >
+      <div >
+        <p>Группа: {{ student.group }}</p>
+      </div>
+      <div>
+        <p>Направление: {{ student.group.direction_of_study }}
+        ({{ student.group.direction_of_study.direction_code }})</p>
+      </div>
+      <div>
+        <form method="post" action="{% url 'check_works' %}">
+    {% csrf_token %}
+     <input type="hidden" name= "student_id" value="{{ student.id }}">
+     {% if request.user.user_type == 'department_admin' %}
+       <label>
+         Руководитель:
+         <select name="teacher_id" required>
+           {% for t in teachers %}
+             <option value="{{ t.id }}">{{ t.user|user_fio }} ({{ t.department }})</option>
+           {% endfor %}
+         </select>
+       </label>
+     {% endif %}
+     <button type="submit">Добавить</button>
+  </form>
+      </div>
+  </div>
+  {% endfor %}
+{% endif %}
+
+
+
+
+
+{% endblock %}

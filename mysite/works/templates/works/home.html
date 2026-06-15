@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load works_extras %}
+{% block main %}
+<div class="archive-home-layout">
+<div class="panel archive-home-filters mb-0 overflow-visible">
+  <h1 class="h4 text-center mb-3">Архив работ</h1>
+  <form action="{% url 'home' %}" method="get" class="row g-3 align-items-end overflow-visible">
+    <div class="col-12 col-sm-6 col-lg-3">
+      <label class="form-label small mb-1" for="archive-q">Ключевые слова</label>
+      <input id="archive-q" name="q" type="text" class="form-control form-control-sm" value="{{ request.GET.q }}" placeholder="Поиск по названию/описанию">
+    </div>
+    <div class="col-6 col-sm-3 col-lg-2">
+      <label class="form-label small mb-1" for="archive-year">Год</label>
+      <select id="archive-year" name="year" class="form-select form-select-sm">
+        <option value="">—</option>
+        {% for y in years %}
+        <option value="{{ y.year }}" {% if request.GET.year == y.year|stringformat:"s" %}selected{% endif %}>{{ y.year }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <label class="form-label small mb-1" for="archive-teacher">Руководитель</label>
+      <select id="archive-teacher" name="teacher_id" class="form-select form-select-sm">
+        <option value="">—</option>
+        {% for t in teachers %}
+        <option value="{{ t.id }}" {% if request.GET.teacher_id == t.id|stringformat:"s" %}selected{% endif %}>{{ t.user|user_fio }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% with request.GET|getlist:"tag" as sel_tags %}
+    <div class="col-12 col-sm-6 col-lg-3 position-relative overflow-visible">
+      <span class="form-label small mb-1 d-block">Теги</span>
+      <details class="border rounded p-2 bg-white mb-0 archive-tag-filter" {% if sel_tags %}open{% endif %}>
+        <summary class="fw-semibold small" style="cursor:pointer;">Выбор тегов{% if sel_tags|length %} ({{ sel_tags|length }}){% endif %}</summary>
+        <div class="pt-2 archive-tag-scroll">
+          {% for t in all_tags %}
+          <div class="form-check mb-1">
+            <input class="form-check-input" type="checkbox" name="tag" value="{{ t.id }}" id="archive-tag-{{ t.id }}" {% if t.id|stringformat:"s" in sel_tags %}checked{% endif %}>
+            <label class="form-check-label small" for="archive-tag-{{ t.id }}">{{ t.name }}</label>
+          </div>
+          {% empty %}
+          <p class="small text-muted mb-0">Пока нет тегов.</p>
+          {% endfor %}
+        </div>
+      </details>
+    </div>
+    {% endwith %}
+    <div class="col-12 col-sm-auto d-flex align-items-end">
+      <button type="submit" class="btn btn-primary btn-sm px-4">Найти</button>
+    </div>
+  </form>
+</div>
+
+<div class="panel archive-works-list-panel d-flex flex-column gap-3">
+{% for work in object_list %}
+  <article class="archive-work-row border-0 rounded-3 shadow-sm overflow-hidden">
+    <div class="archive-work-card-inner">
+      <div class="row g-3 g-lg-4 align-items-stretch">
+        <div class="col-lg-8">
+          <h2 class="archive-work-title h5 mb-3">{{ work.name }}</h2>
+          <dl class="archive-work-meta-grid mb-0">
+            <div class="archive-work-meta-item">
+              <dt>Автор</dt>
+              <dd>{% if work.author %}{{ work.author.user|user_fio }}{% else %}—{% endif %}</dd>
+            </div>
+            <div class="archive-work-meta-item">
+              <dt>Научный руководитель</dt>
+              <dd>{% if work.scientific_director %}{{ work.scientific_director.user|user_fio }}{% else %}—{% endif %}</dd>
+            </div>
+            <div class="archive-work-meta-item">
+              <dt>Год</dt>
+              <dd>{{ work.created_at.year }}</dd>
+            </div>
+          </dl>
+          <div class="archive-work-desc mt-3 pt-3">
+            <div class="archive-work-desc-label">Описание</div>
+            <p class="archive-work-desc-text mb-0">{{ work.description|default:"—" }}</p>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="archive-work-aside h-100 d-flex flex-column align-items-center justify-content-center gap-3 py-2 py-lg-0">
+            <div class="archive-work-icon" aria-hidden="true" title="Просмотр документа">
+              <svg viewBox="0 0 64 64" role="img" focusable="false">
+                <path fill="rgba(255,255,255,0.92)" d="M18 6h20l14 14v38a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6V12a6 6 0 0 1 6-6z"/>
+                <path fill="rgba(0,0,0,0.08)" d="M38 6v14a6 6 0 0 0 6 6h14v-6L44 6h-6z"/>
+                <path fill="rgba(15,23,42,0.28)" d="M22 30h28a2 2 0 0 1 0 4H22a2 2 0 0 1 0-4zm0 10h28a2 2 0 0 1 0 4H22a2 2 0 0 1 0-4zm0 10h18a2 2 0 0 1 0 4H22a2 2 0 0 1 0-4z"/>
+              </svg>
+            </div>
+            {% if work.id in archive_work_ids_with_docx %}
+            <a href="{% url 'onlyoffice_editor' work.id %}?from=archive" class="btn btn-primary btn-sm rounded-pill px-4">Посмотреть работу</a>
+            {% else %}
+            <a href="{% url 'onlyoffice_editor' work.id %}?from=archive" class="btn btn-primary btn-sm rounded-pill px-4">Посмотреть работу</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+{% empty %}
+  <div class="alert alert-warning shadow-sm mb-0 py-4 px-3 rounded-3 archive-empty-filter" role="status">
+    <p class="mb-0 fw-semibold text-center text-dark">По выбранным параметрам записей не найдено</p>
+  </div>
+{% endfor %}
+</div>
+</div>
+
+{% endblock main %}

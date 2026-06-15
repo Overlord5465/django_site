@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="h4 mb-3 text-center">Уведомления</h1>
+<p>
+  <a href="{% url 'notifications' %}?mark_all=1" class="btn btn-outline-success btn-sm rounded-pill px-3 shadow-sm">Отметить все прочитанными</a>
+</p>
+<ul class="list-unstyled">
+  {% for n in items %}
+  <li class="mb-3 p-3 rounded border {% if not n.is_read %}bg-light border-warning border-2{% else %}bg-white{% endif %}">
+    <div class="small text-muted">{{ n.created_at|date:"d.m.Y H:i" }}</div>
+    <div class="fw-bold">{% if not n.is_read %}<span class="text-primary">● </span>{% endif %}{{ n.title }}</div>
+    {% if n.body %}<div class="mt-1 text-break">{{ n.body|linebreaksbr }}</div>{% endif %}
+  </li>
+  {% empty %}
+  <li class="text-muted">Нет уведомлений.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

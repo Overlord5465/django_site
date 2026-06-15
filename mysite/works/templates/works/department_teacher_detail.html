@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load works_extras %}
+
+{% block content %}
+<div class="department-teacher-detail">
+  <div class="department-teacher-detail-header text-center mb-4">
+    <h1 class="h3 mb-1">Преподаватель {{ teacher.user|user_fio }}</h1>
+    <p class="text-muted mb-0">Список студентов</p>
+  </div>
+
+  {% for row in rows %}
+  <article class="card dept-teacher-student-card shadow-sm mb-3">
+    <div class="card-header dept-teacher-student-card__head py-3">
+      <h2 class="h5 mb-0">{{ row.student.user|user_fio }}</h2>
+    </div>
+    <div class="card-body">
+      {% if row.work %}
+      <dl class="row mb-3 dept-teacher-detail-dl small">
+        <dt class="col-sm-3 col-lg-2">Тема</dt>
+        <dd class="col-sm-9 col-lg-10">{{ row.work.name }}</dd>
+        <dt class="col-sm-3 col-lg-2">Описание</dt>
+        <dd class="col-sm-9 col-lg-10 text-break">{{ row.work.description|default:"—"|linebreaksbr }}</dd>
+        <dt class="col-sm-3 col-lg-2">Готовность</dt>
+        <dd class="col-sm-9 col-lg-10">
+          {% if row.work.is_ready_for_norm %}<span class="badge bg-success">готова к нормоконтролю</span>{% else %}<span class="badge bg-secondary">не готова</span>{% endif %}
+        </dd>
+        <dt class="col-sm-3 col-lg-2">Нормоконтроль</dt>
+        <dd class="col-sm-9 col-lg-10">
+          {% if row.work.is_norm_passed %}<span class="badge bg-success">пройден</span>{% else %}<span class="badge bg-secondary">не пройден</span>{% endif %}
+        </dd>
+      </dl>
+
+      <div class="mb-3">
+        <p class="small text-muted mb-1 fw-semibold text-uppercase dept-teacher-detail-section-label">Прогресс плана</p>
+        <div class="plan-progress-wrap" style="max-width: 28rem;">
+          <div class="progress plan-progress-track mb-0 position-relative" role="progressbar"
+               aria-valuenow="{{ row.progress_pct }}" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar bg-success" style="width: {{ row.progress_pct }}%"></div>
+            <span class="plan-progress-pct-inside">{{ row.progress_pct }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <p class="small text-muted mb-2 fw-semibold text-uppercase dept-teacher-detail-section-label">Этапы</p>
+        {% if row.stages %}
+        <ul class="list-group list-group-flush dept-teacher-stages">
+          {% for s in row.stages %}
+          <li class="list-group-item dept-teacher-stage-item px-0 d-flex justify-content-between align-items-start gap-2">
+            <div class="min-w-0">
+              <span class="fw-medium">{{ s.title }}</span>
+              {% if s.due_date %}
+              <span class="text-muted small d-block d-sm-inline ms-sm-1">до {{ s.due_date|date:"d.m.Y" }}</span>
+              {% endif %}
+            </div>
+            {% if s.is_done %}
+            <span class="badge rounded-pill bg-success flex-shrink-0">выполнено</span>
+            {% else %}
+            <span class="badge rounded-pill bg-light text-secondary border flex-shrink-0">не выполнено</span>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted small mb-0">Этапов нет.</p>
+        {% endif %}
+      </div>
+
+      <div class="pt-1">
+        <a href="{% url 'teacher_review_work' row.work.id %}" class="btn btn-primary btn-sm rounded-pill px-4">Открыть проверку работы</a>
+      </div>
+      {% else %}
+      <p class="text-muted mb-0"><span class="fw-semibold text-body">Работа:</span> не создана.</p>
+      {% endif %}
+    </div>
+  </article>
+  {% empty %}
+  <div class="alert alert-light border text-center text-muted mb-0">Нет закреплённых студентов.</div>
+  {% endfor %}
+
+  <p class="text-center mt-4 mb-0">
+    <a href="{% url 'department_teachers' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-4">К списку преподавателей</a>
+  </p>
+</div>
+{% endblock %}

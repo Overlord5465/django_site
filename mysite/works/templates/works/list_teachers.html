@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load works_extras %}
+
+{% block content %}
+{% for f in faculty %}
+<h1 class="mt-4">{{ f.name }}</h1>
+
+<table class="table table-bordered table-hover">
+  <thead class="table-light">
+    <tr>
+      <th scope="col">ФИО</th>
+      {% for code, label in course_buckets %}
+      <th scope="col" class="small">{{ label }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody class="table-active">
+    {% for teacher in object_list %}
+    {% if teacher.department_id == f.id %}
+    <tr>
+      <th scope="row">{{ teacher.user|user_fio }}</th>
+      {% for cur_max in teacher_cells|get_item:teacher.id %}
+      <td>{{ cur_max.0 }}/{{ cur_max.1 }}</td>
+      {% endfor %}
+    </tr>
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endfor %}
+
+{% endblock content %}

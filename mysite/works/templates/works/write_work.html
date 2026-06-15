@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load works_extras %}
+
+{% block content %}
+
+{% if primary_work %}
+  <h1 class="h3 text-center mb-3">{{ primary_work.name }}</h1>
+{% endif %}
+
+{% if student.scientific_director %}
+<p><strong>Научный руководитель:</strong> {{ student.scientific_director.user|user_fio }}</p>
+{% else %}
+<p class="text-muted">Назначьте научного руководителя (через темы или администратора кафедры).</p>
+{% endif %}
+
+{% if primary_work %}
+<p><strong>Тип работы:</strong> {{ primary_work.type_of_work|default:"—" }}</p>
+<p><strong>Описание работы:</strong> {{ primary_work.description|default:"—"|linebreaksbr }}</p>
+
+{% if student.scientific_director %}
+<p><a href="{% url 'onlyoffice_editor' primary_work.id %}" class="btn btn-primary">Открыть DOCX редактор</a></p>
+{% endif %}
+
+<details class="border rounded p-3 mb-3 mt-4 bg-light">
+  <summary class="fw-semibold" style="cursor:pointer;">Теги для архива</summary>
+  <p class="text-muted small mt-2 mb-2">Выберите из списка и/или добавьте свои через запятую.</p>
+  <form method="post" class="mb-0">
+    {% csrf_token %}
+    <input type="hidden" name="save_tags" value="1">
+    <div class="mb-2" style="max-height: 12rem; overflow-y: auto;">
+      {% for t in all_tags %}
+      <label class="me-2 small d-inline-block"><input type="checkbox" name="tag" value="{{ t.id }}" {% if t.id in selected_tag_ids %}checked{% endif %}> {{ t.name }}</label>
+      {% empty %}
+      <p class="small text-muted">Пока нет общих тегов — добавьте свои.</p>
+      {% endfor %}
+    </div>
+    <div class="mb-2">
+      <label class="form-label">Свои теги (через запятую)</label>
+      <input type="text" name="tags_csv" class="form-control" placeholder="например: машинное обучение, Django" value="">
+    </div>
+    <button type="submit" class="btn btn-sm btn-secondary">Сохранить теги</button>
+  </form>
+</details>
+
+<h2 class="h5 mt-4">План (дедлайны)</h2>
+{% if plan %}
+<div class="plan-progress-wrap mb-3">
+  <div class="progress plan-progress-track mb-0 position-relative" role="progressbar" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100" aria-label="Доля выполненных этапов плана">
+    <div class="progress-bar bg-success" style="width: {{ progress }}%"></div>
+    <span class="plan-progress-pct-inside">{{ progress }}%</span>
+  </div>
+</div>
+<ul class="list-unstyled mt-3 plan-stages-list plan-stages-list--student">
+  {% for s, depth in plan_flat %}
+  <li class="plan-stage-item mb-4" style="margin-left: {{ depth }}rem;">
+    <div class="plan-stage-item-inner">
+      <div class="d-flex flex-wrap gap-2 align-items-start plan-stage-toolbar">
+        <div class="flex-grow-1 min-w-0">
+          <span class="plan-stage-badge text-muted small">Этап {{ forloop.counter }}</span>
+          <div class="fw-semibold mt-1">
+            {{ s.title }}
+            {% if s.due_date %}<span class="text-muted fw-normal">до {{ s.due_date|date:"d.m.Y" }}</span>{% endif %}
+            {% if s.is_done %}
+              <span class="text-success ms-1">✓</span>
+            {% elif s.student_ready %}
+              <span class="text-warning">(Ожидает проверки)</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% if user.student and primary_work.author_id == user.student.id and not s.is_done and not s.student_ready %}
+      <div class="plan-stage-student-footer">
+        <form method="post" action="{% url 'mark_stage_ready' s.id %}" class="mb-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-outline-primary">Готово к проверке</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </li>
+  {% empty %}
+  <li class="text-muted py-2">Этапов нет.</li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="text-muted">План ещё не создан преподавателем.</p>
+{% endif %}
+
+{% else %}
+<p class="text-muted">Работа не создана.</p>
+{% endif %}
+
+{% endblock content %}

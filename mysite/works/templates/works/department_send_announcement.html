@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="mx-auto" style="max-width: 40rem;">
+  <h1 class="h3 text-center mb-3">Уведомление студентам кафедры</h1>
+  <p class="text-muted small text-center mb-4">
+    Сообщение получат все студенты выбранного <strong>курса</strong> (поле «Курс» у учебной группы), закреплённые за преподавателями вашей кафедры,
+    и их научные руководители (по одному уведомлению на преподавателя). Сам администратор уведомление не получает.
+  </p>
+  <form method="post" class="card shadow-sm border-0">
+    {% csrf_token %}
+    <div class="card-body">
+      {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.course.id_for_label }}">{{ form.course.label }}</label>
+        {{ form.course }}
+        {{ form.course.errors }}
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.body.id_for_label }}">{{ form.body.label }}</label>
+        {{ form.body }}
+        {{ form.body.errors }}
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Отправить</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

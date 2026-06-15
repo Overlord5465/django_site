@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load works_extras %}
+{% load tz %}
+{% block content %}
+<div class="topic-applications-page">
+<h1 class="h3 mb-4 text-center">Заявки на темы</h1>
+
+<h2 class="h5 mb-3 pb-2 border-bottom topic-apps-section-title">Заявки из банка тем</h2>
+<div class="d-flex flex-column gap-3 mb-5">
+  {% for a in applications %}
+  <article class="card topic-app-card border-0 shadow-sm">
+    <div class="card-body p-3 p-md-4">
+      <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+        <div>
+          <h3 class="h6 mb-0 fw-semibold text-dark">{{ a.student.user|user_fio }}</h3>
+          <p class="text-muted small mb-0 mt-1">Подано {{ a.created_at|localtime|date:"d.m.Y H:i" }}</p>
+        </div>
+        {% if a.status == 'pending' %}
+        <span class="badge rounded-pill bg-warning text-dark align-self-start">Ожидает решения</span>
+        {% elif a.status == 'approved' %}
+        <span class="badge rounded-pill bg-success align-self-start">Утверждена</span>
+        {% elif a.status == 'rejected' %}
+        <span class="badge rounded-pill bg-danger align-self-start">Отклонена</span>
+        {% else %}
+        <span class="badge rounded-pill bg-secondary align-self-start">{{ a.get_status_display }}</span>
+        {% endif %}
+      </div>
+
+      <div class="topic-app-fields row g-2 small mb-3">
+        <div class="col-sm-6 col-lg-4">
+          <span class="topic-app-label">Направление</span>
+          <div class="topic-app-value">
+            {% if a.student.group and a.student.group.direction_of_study %}
+              {{ a.student.group.direction_of_study.name_of_direction }}
+              <span class="text-muted">({{ a.student.group.direction_of_study.direction_code }})</span>
+            {% else %}—{% endif %}
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-4">
+          <span class="topic-app-label">Курс</span>
+          <div class="topic-app-value">{{ a.student|student_course_line }}</div>
+        </div>
+        <div class="col-sm-6 col-lg-4">
+          <span class="topic-app-label">Группа</span>
+          <div class="topic-app-value">{% if a.student.group %}{{ a.student.group.group_number }}{% else %}—{% endif %}</div>
+        </div>
+      </div>
+
+      <div class="topic-app-topic p-3 rounded-3 mb-3">
+        <span class="topic-app-label d-block mb-1">Тема</span>
+        <p class="mb-0 fw-medium">{{ a.topic.title }}</p>
+      </div>
+
+      {% if a.status == 'pending' %}
+      <a href="{% url 'decide_topic_application' a.id %}" class="btn btn-primary btn-sm rounded-pill px-4">Решить</a>
+      {% endif %}
+    </div>
+  </article>
+  {% empty %}
+  <p class="text-muted mb-0 py-3 px-1">Заявок нет.</p>
+  {% endfor %}
+</div>
+
+<h2 class="h5 mb-3 pb-2 border-bottom topic-apps-section-title">Предложения своих тем</h2>
+<div class="d-flex flex-column gap-3">
+  {% for p in proposals %}
+  <article class="card topic-app-card border-0 shadow-sm">
+    <div class="card-body p-3 p-md-4">
+      <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+        <div>
+          <h3 class="h6 mb-0 fw-semibold text-dark">{{ p.student.user|user_fio }}</h3>
+          <p class="text-muted small mb-0 mt-1">Подано {{ p.created_at|localtime|date:"d.m.Y H:i" }}</p>
+        </div>
+        {% if p.status == 'pending' %}
+        <span class="badge rounded-pill bg-warning text-dark align-self-start">Ожидает решения</span>
+        {% elif p.status == 'approved' %}
+        <span class="badge rounded-pill bg-success align-self-start">Утверждена</span>
+        {% elif p.status == 'rejected' %}
+        <span class="badge rounded-pill bg-danger align-self-start">Отклонена</span>
+        {% else %}
+        <span class="badge rounded-pill bg-secondary align-self-start">{{ p.get_status_display }}</span>
+        {% endif %}
+      </div>
+
+      <div class="topic-app-fields row g-2 small mb-3">
+        <div class="col-sm-6 col-lg-4">
+          <span class="topic-app-label">Направление</span>
+          <div class="topic-app-value">
+            {% if p.student.group and p.student.group.direction_of_study %}
+              {{ p.student.group.direction_of_study.name_of_direction }}
+              <span class="text-muted">({{ p.student.group.direction_of_study.direction_code }})</span>
+            {% else %}—{% endif %}
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-4">
+          <span class="topic-app-label">Курс</span>
+          <div class="topic-app-value">{{ p.student|student_course_line }}</div>
+        </div>
+        <div class="col-sm-6 col-lg-4">
+          <span class="topic-app-label">Группа</span>
+          <div class="topic-app-value">{% if p.student.group %}{{ p.student.group.group_number }}{% else %}—{% endif %}</div>
+        </div>
+      </div>
+
+      <div class="topic-app-topic p-3 rounded-3 mb-3">
+        <span class="topic-app-label d-block mb-1">Тема</span>
+        <p class="mb-0 fw-medium">{{ p.title }}</p>
+      </div>
+
+      {% if p.status == 'pending' %}
+      <a href="{% url 'decide_topic_proposal' p.id %}" class="btn btn-primary btn-sm rounded-pill px-4">Решить</a>
+      {% endif %}
+    </div>
+  </article>
+  {% empty %}
+  <p class="text-muted mb-0 py-3 px-1">Предложений нет.</p>
+  {% endfor %}
+</div>
+</div>
+{% endblock %}

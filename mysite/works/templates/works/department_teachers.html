@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load works_extras %}
+
+{% block content %}
+<h1 class="text-center mb-3">Список преподавателей кафедры</h1>
+
+<form method="post" class="mt-4">
+  {% csrf_token %}
+  <input type="hidden" name="update_limits" value="1">
+<table class="table table-bordered table-hover align-middle department-teachers-table">
+  <thead class="table-light">
+    <tr>
+      <th scope="col" class="dept-teachers-col-fio">ФИО</th>
+      {% for code, label in course_buckets %}
+      <th scope="col" class="small">{{ label }}<br><span class="fw-normal text-muted">занято / лимит</span></th>
+      {% endfor %}
+      <th scope="col" class="text-end text-md-center dept-teachers-col-action small">Студенты</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for teacher in teachers %}
+    <tr class="dept-teachers-row">
+      <th scope="row" class="dept-teachers-fio-cell">
+        {{ teacher.user|user_fio }}
+      </th>
+      {% with tm=teacher_cells|get_item:teacher.id %}
+      {% for code, label in course_buckets %}
+      {% with cur_max=tm|get_item:code %}
+      <td>
+        {{ cur_max.0 }} /
+        <input type="number" name="max_{{ teacher.id }}_{{ code }}" min="{{ cur_max.0 }}" value="{{ cur_max.1 }}" class="form-control form-control-sm d-inline-block dept-teachers-limit-input" style="width:4.5rem;">
+      </td>
+      {% endwith %}
+      {% endfor %}
+      {% endwith %}
+      <td class="text-end text-md-center dept-teachers-action-cell">
+        <a href="{% url 'department_teacher_detail' teacher.id %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 dept-teacher-students-btn">Студенты</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">Нет преподавателей на кафедре.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+  <button type="submit" class="btn btn-primary btn-sm mt-2">Сохранить лимиты</button>
+</form>
+{% endblock %}

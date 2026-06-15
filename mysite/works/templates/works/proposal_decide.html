@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load works_extras %}
+{% block content %}
+<div class="proposal-decide-page">
+  <h1 class="h4 text-center mb-4">Решение по предложенной теме</h1>
+
+  <div class="proposal-decide-summary mb-4">
+    <dl class="proposal-decide-dl mb-0">
+      <div class="proposal-decide-row">
+        <dt>Тема</dt>
+        <dd class="mb-0 fw-medium">{{ proposal.title }}</dd>
+      </div>
+      <div class="proposal-decide-row">
+        <dt>Описание</dt>
+        <dd class="mb-0">{{ proposal.description|linebreaksbr|default:"—" }}</dd>
+      </div>
+      <div class="proposal-decide-row mb-0">
+        <dt>Студент</dt>
+        <dd class="mb-0">{{ proposal.student.user|user_fio }}</dd>
+      </div>
+    </dl>
+  </div>
+
+  <form method="post" id="decide-prop-form" class="proposal-decide-form">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label fw-semibold" for="{{ form.status.id_for_label }}">{{ form.status.label }}</label>
+      {{ form.status }}
+    </div>
+    <div class="mb-3" id="reject-comment-wrap-p" style="display:none;">
+      <label class="form-label fw-semibold" for="{{ form.decision_comment.id_for_label }}">{{ form.decision_comment.label }}</label>
+      {{ form.decision_comment }}
+    </div>
+    <div class="d-flex flex-wrap gap-2 align-items-center pt-1">
+      <button type="submit" class="btn btn-primary rounded-pill px-4">Сохранить</button>
+      <a href="{% url 'topic_applications' %}" class="btn btn-outline-secondary rounded-pill px-4">К списку заявок</a>
+    </div>
+  </form>
+</div>
+<script>
+(function() {
+  var st = document.querySelector('#decide-prop-form select[name=status], #decide-prop-form input[name=status]');
+  var wrap = document.getElementById('reject-comment-wrap-p');
+  function sync() {
+    if (!st || !wrap) return;
+    wrap.style.display = (st.value === 'rejected') ? 'block' : 'none';
+  }
+  if (st) { st.addEventListener('change', sync); sync(); }
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load works_extras %}
+
+{% block content %}
+<div class="check-works-page">
+  <h1 class="h4 mb-2">Студенты</h1>
+
+  <ul class="list-unstyled check-works-list mb-0">
+    {% for student in students %}
+    {% with w=work_by_student|get_item:student.id %}
+    <li class="check-works-card mb-3">
+      <div class="check-works-card-inner">
+        <div class="check-works-fields">
+          <div class="check-works-row">
+            <span class="check-works-label">ФИО</span>
+            <span class="check-works-value">{{ student.user|user_fio }}</span>
+          </div>
+          <div class="check-works-row">
+            <span class="check-works-label">Группа</span>
+            <span class="check-works-value">{{ student.group|default:"—" }}</span>
+          </div>
+          <div class="check-works-row">
+            <span class="check-works-label">Направление</span>
+            <span class="check-works-value">{% if student.group and student.group.direction_of_study %}{{ student.group.direction_of_study }} <span class="text-muted">({{ student.group.direction_of_study.direction_code }})</span>{% else %}—{% endif %}</span>
+          </div>
+          {% if w %}
+          <div class="check-works-row">
+            <span class="check-works-label">Тема работы</span>
+            <span class="check-works-value fw-semibold">{{ w.name }}</span>
+          </div>
+          {% endif %}
+        </div>
+        <div class="check-works-actions">
+          {% if w %}
+          <a href="{% url 'teacher_review_work' w.id %}" class="btn btn-primary btn-sm rounded-pill px-4">Проверить работу студента</a>
+          {% else %}
+          <span class="text-muted small">Работа не создана</span>
+          {% endif %}
+        </div>
+      </div>
+    </li>
+    {% endwith %}
+    {% empty %}
+    <li class="check-works-empty text-muted text-center py-4">Нет закреплённых студентов.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock content %}

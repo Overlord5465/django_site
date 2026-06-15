@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block page_container_class %}container-fluid p-0{% endblock %}
+
+{% block main %}
+<div class="container-fluid px-3 px-lg-4">
+  <style>
+    /* Футер fixed-bottom съедает высоту и перекрывает редактор — прячем его только тут */
+    .fixed-bottom, footer { display: none !important; }
+    html, body { height: 100%; overflow: hidden; }
+  </style>
+
+  {{ config|json_script:"onlyoffice-config" }}
+
+  <style>
+    /* Для редактора используем full-width layout и отдаём максимум высоты. */
+    .onlyoffice-panel {
+      background-color: rgba(240,240,240,0.9);
+      border: 1px solid rgba(0,0,0,0.25);
+      border-radius: 18px;
+      padding: 10px;
+    }
+    #onlyoffice-editor {
+      width: 100%;
+      /* основную высоту выставляем JS-ом (в px), это стабильнее для ONLYOFFICE */
+      height: 820px;
+      min-height: 620px;
+      position: relative;
+      border: 1px solid rgba(0,0,0,0.2);
+      border-radius: 12px;
+      background: #fff;
+      overflow: hidden;
+    }
+    /* ONLYOFFICE рисует iframe внутри контейнера — фиксируем его высоту/фон */
+    #onlyoffice-editor iframe {
+      width: 100% !important;
+      height: 100% !important;
+      display: block !important;
+      background: #fff !important;
+    }
+    @media (max-width: 768px) {
+      #onlyoffice-editor { min-height: 520px; }
+    }
+  </style>
+
+  <div class="onlyoffice-panel" id="onlyoffice-panel">
+    {% if work.is_archived %}
+    <div class="alert alert-info small py-2 mb-2 rounded-3" role="status">
+      <strong>Режим просмотра.</strong> Работа завершена и в архиве — ONLYOFFICE открывается только для чтения (нет ленты «Главная», правка текста отключена). Чтобы редактировать, откройте работу, которая ещё <strong>не завершена</strong> (черновик / в процессе).
+    </div>
+    {% endif %}
+    <p id="onlyoffice-help" class="text-muted small mb-2" style="display:none"></p>
+    <div id="onlyoffice-editor"></div>
+  </div>
+</div>
+
+<script
+  src="{{ onlyoffice_public_ds_url }}/web-apps/apps/api/documents/api.js"
+  onerror="document.getElementById('onlyoffice-help').style.display='block'; document.getElementById('onlyoffice-help').className='alert alert-danger small mb-2'; document.getElementById('onlyoffice-help').textContent='Не загрузилась библиотека ONLYOFFICE (api.js). Проверьте, что Document Server запущен, и в переменной среды ONLYOFFICE_PUBLIC_DS_URL указан правильный адрес (например, http://localhost:8082).';"
+></script>
+<script>
+  (function() {
+    const editorEl = document.getElementById('onlyoffice-editor');
+    const panelEl = document.getElementById('onlyoffice-panel');
+    const helpEl = document.getElementById('onlyoffice-help');
+
+    const setEditorHeight = () => {
+      if (!editorEl) return;
+      const header = document.querySelector('header');
+      const top = (header ? header.getBoundingClientRect().bottom : 0) + 12;
+      const gap = 12;
+      const desiredWidth = 1040;
+      const available = window.innerWidth - gap * 2;
+      const width = Math.min(desiredWidth, Math.max(720, available));
+      const left = Math.floor((window.innerWidth - width) / 2);
+      const right = window.innerWidth - width - left;
+      const bottom = 12;
+
+      if (panelEl) {
+        panelEl.style.position = 'fixed';
+        panelEl.style.top = top + 'px';
+        panelEl.style.left = left + 'px';
+        panelEl.style.right = right + 'px';
+        panelEl.style.bottom = bottom + 'px';
+        panelEl.style.margin = '0';
+        panelEl.style.zIndex = '1';
+      }
+
+      editorEl.style.height = '100%';
+    };
+
+    setEditorHeight();
+
+    if (typeof window.DocsAPI === 'undefined' || !window.DocsAPI.DocEditor) {
+      if (helpEl) {
+        helpEl.style.display = 'block';
+        helpEl.className = 'alert alert-danger small mb-2';
+        helpEl.textContent = 'Нет объекта DocsAPI. Document Server не отвечает или другой порт. Укажите ONLYOFFICE_PUBLIC_DS_URL, совпадающий с «Внешний URL»/портом Document Server, и убедитесь, что JWT (ONLYOFFICE_JWT_SECRET) совпадает с настройками OnlyOffice, либо задайте ONLYOFFICE_JWT_SECRET пустым, если в DS отключён JWT.';
+      }
+      return;
+    }
+
+    const cfg = JSON.parse(document.getElementById('onlyoffice-config').textContent);
+    cfg.events = cfg.events || {};
+    cfg.events.onError = function (e) {
+      if (helpEl) {
+        helpEl.style.display = 'block';
+        helpEl.className = 'alert alert-warning small mb-2';
+        helpEl.textContent = 'Ошибка ONLYOFFICE: ' + (e && e.data ? JSON.stringify(e.data) : JSON.stringify(e) || 'неизвестно') + ' — чаще всего несовпадение JWT, недоступный URL для скачивания DOCX с сервиса, или сеть/фаервол.';
+      }
+    };
+    window.docEditor = new DocsAPI.DocEditor("onlyoffice-editor", cfg);
+
+    const safeResize = () => {
+      setEditorHeight();
+      try {
+        const h = editorEl.clientHeight || parseInt(editorEl.style.height || '0', 10) || 0;
+        const iframe = editorEl.querySelector('iframe');
+        if (iframe && h) {
+          iframe.style.width = '100%';
+          iframe.style.height = h + 'px';
+          iframe.style.display = 'block';
+        }
+        const directChildren = Array.from(editorEl.children || []);
+        directChildren.forEach((el) => {
+          if (h) el.style.height = h + 'px';
+          el.style.maxHeight = 'none';
+        });
+      } catch (e) {}
+      try { window.docEditor && window.docEditor.resize && window.docEditor.resize(); } catch (e) {}
+    };
+    window.addEventListener('resize', safeResize);
+    setTimeout(safeResize, 400);
+    setTimeout(safeResize, 1200);
+    setTimeout(safeResize, 2500);
+
+    try {
+      const obs = new MutationObserver(() => safeResize());
+      obs.observe(editorEl, { childList: true, subtree: true });
+      setTimeout(() => obs.disconnect(), 20000);
+    } catch (e) {}
+  })();
+</script>
+{% endblock main %}

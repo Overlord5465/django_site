@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block main %}
+<h1 class="h4 mb-3">{{ work.name }}</h1>
+<p class="text-muted mb-2">
+  Состояние: Готово ({{ progress|default:100 }}%)
+  {% if work.completed_at %} · в архиве с {{ work.completed_at|date:"d.m.Y" }}{% endif %}
+</p>
+
+<div class="mb-4">
+  <p class="text-muted mb-2">
+    Просмотр завершённой работы: документ Word открывается только для чтения, без редактирования и загрузки новых версий.
+  </p>
+  <p class="mb-0">
+    {% if has_docx %}
+    <a href="{% url 'onlyoffice_editor' work.id %}" class="btn btn-primary btn-sm">Открыть DOCX (просмотр)</a>
+    {% else %}
+    <span class="text-muted">Файл DOCX для этой работы не найден.</span>
+    {% endif %}
+  </p>
+</div>
+
+<h2 class="h6">Версии файлов</h2>
+<ul class="list-unstyled">
+  {% for v in versions %}
+  <li class="mb-2 border-bottom pb-2">
+    <span class="text-muted">{{ v.uploaded_at|date:"d.m.Y H:i" }}</span>
+    — {{ v.comment|default:"—" }}
+    {% if v.is_final %}<span class="badge bg-secondary">финал</span>{% endif %}
+    {% if v.file %}
+    · <a href="{{ v.file.url }}">скачать</a>
+    {% endif %}
+  </li>
+  {% empty %}
+  <li>Версий нет.</li>
+  {% endfor %}
+</ul>
+
+<p class="mt-3 mb-0"><a href="{% url 'home' %}">← К архиву работ</a></p>
+{% endblock main %}

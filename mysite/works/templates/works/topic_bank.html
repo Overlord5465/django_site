@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="topic-bank-page">
+  <h1 class="text-center mb-3">Темы</h1>
+{% if user.user_type == 'teacher' or user.user_type == 'department_admin' %}
+  <p class="text-center mb-3"><a href="{% url 'create_topic' %}" class="btn btn-outline-primary btn-sm">Добавить тему</a></p>
+{% endif %}
+{% if user.user_type == 'student' and can_propose %}
+  <p class="text-center mb-3"><a href="{% url 'propose_topic' %}" class="btn btn-outline-primary btn-sm">Предложить свою тему</a></p>
+{% endif %}
+
+{% if topics %}
+{% regroup topics by work_kind as topic_groups %}
+{% for group in topic_groups %}
+  <h2 class="h5 mt-4 topic-bank-section-title">{{ group.list.0.get_work_kind_display }}</h2>
+  <div class="topic-bank-list">
+  {% for t in group.list %}
+    <div class="topic-bank-card">
+      <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2">
+        <div>
+          <div class="topic-bank-title">{{ t.title }}</div>
+          <div class="topic-bank-meta small text-muted">
+            {{ t.creator.user.first_name }} ({{ t.creator.department|default:"—" }})
+          </div>
+        </div>
+        {% if user.user_type == 'student' and can_apply %}
+          <form method="post" action="{% url 'apply_topic' t.id %}" class="m-0">{% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-sm">Подать заявку</button>
+          </form>
+        {% endif %}
+      </div>
+      {% if t.description %}
+        <div class="topic-bank-desc small mt-2">{{ t.description }}</div>
+      {% endif %}
+    </div>
+  {% endfor %}
+  </div>
+{% endfor %}
+{% else %}
+  <p class="text-muted text-center mb-0">Тем пока нет</p>
+{% endif %}
+ </div>
+{% endblock %}

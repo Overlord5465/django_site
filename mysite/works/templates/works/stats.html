@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load works_extras %}
+
+{% block content %}
+  <h2 class="text-center mb-3">Прогресс работ</h2>
+
+  {% for sec in teacher_sections %}
+    <div class="mb-4 border rounded p-3 bg-light">
+      <h4 class="h6">{{ sec.teacher.user|user_fio }} <span class="text-muted small">({{ sec.teacher.department|default:"—" }})</span></h4>
+      {% if sec.rows %}
+      <ul class="list-unstyled mb-0">
+        {% for row in sec.rows %}
+        <li class="mb-3 pb-2 border-bottom">
+          <strong>{{ row.student.user|user_fio }}</strong>
+          {% if row.work %}
+          <span class="text-muted small">— {{ row.work.name }}</span>
+          <div class="plan-progress-wrap mt-1" style="max-width: 28rem;">
+            <div class="progress plan-progress-track mb-0 position-relative" role="progressbar" aria-valuenow="{{ row.progress }}" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-bar bg-success" style="width: {{ row.progress }}%"></div>
+              <span class="plan-progress-pct-inside">{{ row.progress }}%</span>
+            </div>
+          </div>
+          {% else %}
+          <span class="text-muted small">работа не создана</span>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="text-muted small mb-0">Нет закреплённых студентов.</p>
+      {% endif %}
+    </div>
+  {% empty %}
+  <p class="text-muted">Нет преподавателей в выборке.</p>
+  {% endfor %}
+{% endblock content %}

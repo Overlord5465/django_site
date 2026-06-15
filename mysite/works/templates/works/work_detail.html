@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ work.name }}</h1>
+<p>
+  Состояние:
+  {% if progress|default:0 == 100 %}
+  Готово (100%)
+  {% else %}
+  Не готово ({{ progress|default:0 }}%)
+  {% endif %}
+</p>
+<div class="mb-3">
+  <p class="text-muted">
+    Здесь собраны ключевые разделы работы: DOCX‑редактор, индивидуальный план и история загруженных файлов (версии).
+  </p>
+  <p>
+    <a href="{% url 'onlyoffice_editor' work.id %}">DOCX редактор (Word)</a> ·
+    <a href="{% url 'plan_detail' work.id %}">Индивидуальный план</a>
+    {% if user.user_type == 'teacher' and work.scientific_director_id == user.teacher.id %}
+      · <a href="{% url 'edit_work_topic' work.id %}">Изменить тему</a>
+    {% endif %}
+  </p>
+</div>
+{% if user.student and work.author_id == user.student.id %}
+<p><a href="{% url 'upload_version' work.id %}">Загрузить версию файла</a></p>
+{% endif %}
+<h2>Версии</h2>
+<ul>
+  {% for v in versions %}
+  <li>{{ v.uploaded_at }} — {{ v.comment }} {% if v.is_final %}(финал){% endif %}
+    {% if v.file %} · <a href="{{ v.file.url }}">скачать</a>{% endif %}
+  </li>
+  {% empty %}
+  <li>Версий пока нет.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

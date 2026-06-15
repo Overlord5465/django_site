@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load works_extras %}
+
+{% block content %}
+  <h2>Назначение/редактирование темы</h2>
+  <p><b>Студент:</b> {{ student.user|user_fio }}</p>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Сохранить</button>
+  </form>
+{% endblock content %}
+

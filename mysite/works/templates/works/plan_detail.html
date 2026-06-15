@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>План: {{ work.name }}</h1>
+<div class="card border mb-3">
+  <div class="card-body py-2 small">
+    <strong>Статус:</strong> {{ work.get_status_display }}.
+    Готовность к нормоконтролю: {% if work.is_ready_for_norm %}да{% else %}нет{% endif %};
+    нормоконтроль: {% if work.is_norm_passed %}пройден{% else %}не пройден{% endif %}.
+  </div>
+</div>
+<div class="plan-progress-wrap mb-3">
+  <div class="progress plan-progress-track mb-0 position-relative" role="progressbar" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100" aria-label="Доля выполненных этапов плана">
+    <div class="progress-bar bg-success" style="width: {{ progress }}%"></div>
+    <span class="plan-progress-pct-inside">{{ progress }}%</span>
+  </div>
+</div>
+{% if plan %}
+  {% if user.user_type == 'department_admin' or user.teacher %}
+  <form method="post" action="{% url 'add_plan_stage' work.id %}" class="border rounded p-3 mb-3 bg-light">{% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.path }}">
+    <div class="row g-2 align-items-end">
+      <div class="col-md-4">{{ stage_form.title.label_tag }}{{ stage_form.title }}</div>
+      <div class="col-md-3">{{ stage_form.due_date.label_tag }}{{ stage_form.due_date }}</div>
+      <div class="col-md-4">{{ stage_form.parent.label_tag }}{{ stage_form.parent }}</div>
+      <div class="col-md-1"><button type="submit" class="btn btn-sm btn-secondary w-100">Добавить</button></div>
+    </div>
+  </form>
+  {% endif %}
+{% else %}
+  <p class="text-muted">План ещё не создан преподавателем.</p>
+{% endif %}
+<ul class="list-unstyled">
+  {% for s, depth in plan_flat %}
+  <li class="mb-2 border-bottom pb-2" style="margin-left: {{ depth }}rem;">
+    {{ s.title }} {% if s.due_date %}(до {{ s.due_date|date:"d.m.Y" }}){% endif %}
+    {% if s.is_done %}
+      <span class="text-success">✓</span>
+    {% elif s.student_ready %}
+      <span class="text-warning">(Ожидает проверки)</span>
+    {% endif %}
+
+    {% if user.student and work.author_id == user.student.id and not s.is_done %}
+      {% if not s.student_ready %}
+        <form method="post" action="{% url 'mark_stage_ready' s.id %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-outline-primary">Готово к проверке</button>
+        </form>
+      {% else %}
+        <span class="text-muted">(Ожидает проверки)</span>
+      {% endif %}
+    {% endif %}
+
+    {% if user.user_type == 'department_admin' %}
+      {% if not s.is_done %}
+        <form method="post" action="{% url 'approve_stage' s.id %}" style="display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button type="submit" class="btn btn-sm btn-success" {% if not s.student_ready %}disabled{% endif %}>Подтвердить</button>
+        </form>
+      {% endif %}
+    {% elif user.teacher and work.scientific_director_id == user.teacher.id %}
+      {% if not s.is_done %}
+        <form method="post" action="{% url 'approve_stage' s.id %}" style="display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button type="submit" class="btn btn-sm btn-success" {% if not s.student_ready %}disabled{% endif %}>Подтвердить</button>
+        </form>
+      {% endif %}
+    {% endif %}
+  </li>
+  {% empty %}
+  <li>Этапов нет.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

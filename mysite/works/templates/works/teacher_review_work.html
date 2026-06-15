@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load works_extras %}
+
+{% block content %}
+<h1 class="text-center">Проверка работы</h1>
+<p><strong>Студент:</strong> {{ student.user|user_fio }}</p>
+<p><strong>Направление:</strong> {% if student.group and student.group.direction_of_study %}{{ student.group.direction_of_study }} ({{ student.group.direction_of_study.direction_code }}){% else %}—{% endif %}</p>
+<p><strong>Тема:</strong> {{ work.name }}</p>
+<p><strong>Описание:</strong> {{ work.description|default:"—"|linebreaksbr }}</p>
+
+<p>
+  <a href="{% url 'onlyoffice_editor' work.id %}" class="btn btn-primary btn-sm">Открыть DOCX редактор</a>
+  <a href="{% url 'edit_work_topic' work.id %}" class="btn btn-outline-secondary btn-sm">Изменить тему</a>
+</p>
+
+<h2 class="h5 mt-4">План (дедлайны)</h2>
+<div class="plan-progress-wrap mb-3">
+  <div class="progress plan-progress-track mb-0 position-relative" role="progressbar" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100" aria-label="Доля выполненных этапов плана">
+    <div class="progress-bar bg-success" style="width: {{ progress }}%"></div>
+    <span class="plan-progress-pct-inside">{{ progress }}%</span>
+  </div>
+</div>
+
+{% if plan %}
+<form id="bulk-plan-form" method="post" action="{% url 'save_plan_stages' work.id %}" class="d-none" aria-hidden="true">{% csrf_token %}</form>
+<form method="post" action="{% url 'add_plan_stage' work.id %}" class="border rounded p-3 mb-3 bg-light">{% csrf_token %}
+  <div class="row g-2 align-items-end">
+    <div class="col-md-4">{{ stage_form.title.label_tag }}{{ stage_form.title }}</div>
+    <div class="col-md-3">{{ stage_form.due_date.label_tag }}{{ stage_form.due_date }}</div>
+    <div class="col-md-4">{{ stage_form.parent.label_tag }}{{ stage_form.parent }}</div>
+    <div class="col-md-1"><button type="submit" class="btn btn-sm btn-secondary w-100">Добавить</button></div>
+  </div>
+  <p class="small text-muted mb-0 mt-2">Порядок среди пунктов одного уровня задаётся полем «Порядок» в карточке.</p>
+</form>
+{% else %}
+<p class="text-muted">План ещё не создан.</p>
+{% endif %}
+
+<ul class="list-unstyled mt-3 plan-stages-list">
+  {% for s, depth in plan_flat %}
+  <li class="plan-stage-item mb-4" style="margin-left: {{ depth }}rem;">
+    <div class="plan-stage-item-inner">
+      <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between plan-stage-toolbar">
+        <div class="flex-grow-1 min-w-0">
+          <span class="plan-stage-badge text-muted small">Этап {{ forloop.counter }}</span>
+          <div class="fw-semibold mt-1">
+            {{ s.title }} {% if s.due_date %}<span class="text-muted fw-normal">до {{ s.due_date|date:"d.m.Y" }}</span>{% endif %}
+            {% if s.is_done %}<span class="text-success">(выполнено)</span>{% elif s.student_ready %}<span class="text-warning">(Ожидает проверки)</span>{% endif %}
+          </div>
+        </div>
+        <div class="d-flex flex-wrap gap-1 flex-shrink-0">
+          {% if not s.is_done %}
+          <form method="post" action="{% url 'approve_stage' s.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-success" {% if not s.student_ready %}disabled title="Студент не отметил готовность"{% endif %}>Этап выполнен</button>
+          </form>
+          {% endif %}
+          <form method="post" action="{% url 'delete_plan_stage' s.id %}" style="display:inline;" onsubmit="return confirm('Удалить пункт и вложенные?');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+          </form>
+        </div>
+      </div>
+    <div class="row g-2 mt-3 pt-3 plan-stage-fields small align-items-end">
+      <div class="col-md-3">
+        <label class="form-label">Название</label>
+        <input type="text" name="stage_{{ s.id }}_title" form="bulk-plan-form" class="form-control form-control-sm" value="{{ s.title }}" maxlength="200">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Срок</label>
+        <input type="date" name="stage_{{ s.id }}_due_date" form="bulk-plan-form" class="form-control form-control-sm" value="{% if s.due_date %}{{ s.due_date|date:'Y-m-d' }}{% endif %}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Родитель</label>
+        <select name="stage_{{ s.id }}_parent" form="bulk-plan-form" class="form-select form-select-sm">
+          <option value="">— корень —</option>
+          {% for ps in plan.stages.all %}
+          {% if ps.id != s.id %}
+          <option value="{{ ps.id }}" {% if s.parent_id == ps.id %}selected{% endif %}>{{ ps.title }}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Порядок</label>
+        <input type="number" name="stage_{{ s.id }}_order" form="bulk-plan-form" class="form-control form-control-sm" value="{{ s.order }}" min="0">
+      </div>
+    </div>
+    </div>
+  </li>
+  {% empty %}
+  <li>Этапов нет.</li>
+  {% endfor %}
+</ul>
+
+{% if plan and plan_flat %}
+<p class="mt-3 mb-4">
+  <button type="submit" form="bulk-plan-form" class="btn btn-primary btn-sm">Сохранить изменения</button>
+</p>
+{% endif %}
+
+<div class="card border mb-3">
+  <div class="card-body py-3">
+    <h3 class="h6 text-uppercase text-muted mb-3">Статус работы</h3>
+    <ul class="list-unstyled mb-0 small">
+      <li class="mb-2"><strong>Готовность к нормоконтролю:</strong>
+        {% if work.is_ready_for_norm %}<span class="text-success">да</span>{% else %}<span class="text-secondary">нет</span>{% endif %}
+      </li>
+      <li><strong>Нормоконтроль:</strong>
+        {% if work.is_norm_passed %}<span class="text-success">пройден</span>{% else %}<span class="text-secondary">не пройден</span>{% endif %}
+      </li>
+    </ul>
+    <p class="text-muted small mb-0 mt-2">Текущий статус в системе: <strong>{{ work.get_status_display }}</strong></p>
+  </div>
+</div>
+
+{% if user.user_type == 'teacher' and work.scientific_director_id == user.teacher.id %}
+<form method="post" action="{% url 'mark_work_ready' work.id %}" class="mt-2 d-inline-block me-2">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-warning" {% if not can_mark_ready %}disabled title="Отметьте все этапы плана выполненными"{% endif %}>Работа готова</button>
+</form>
+<form method="post" action="{% url 'mark_work_defended' work.id %}" class="mt-2 d-inline-block" onsubmit="return confirm('Отметить защиту и перенести работу в архив? Это действие нельзя отменить.');">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-success" {% if not can_mark_defended %}disabled title="Сначала пройдите нормоконтроль на кафедре"{% endif %}>Работа защищена</button>
+</form>
+{% endif %}
+
+{% if norm_button_visible_admin %}
+  {% if work.status == 'ready' %}
+  <div class="alert alert-warning small mt-3 mb-2">Студент и научный руководитель завершили план: работа отмечена как готовая. Проверьте оформление и при необходимости откройте DOCX, затем подтвердите нормоконтроль.</div>
+  {% endif %}
+  <form method="post" action="{% url 'mark_work_norm_ok' work.id %}" class="mt-2" id="mark-work-norm-ok-form">
+    {% csrf_token %}
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="mark-work-norm-ok" name="norm_ok_ack"
+        {% if not can_mark_norm %}disabled{% endif %}
+        {% if work.is_norm_passed %}checked{% endif %}
+        {% if can_mark_norm %}
+        onchange="if (this.checked) { if (!confirm('Подтвердить прохождение нормоконтроля для этой работы?')) { this.checked = false; } else { this.closest('form').submit(); } }"
+        {% endif %}>
+      <label class="form-check-label{% if not can_mark_norm and not work.is_norm_passed %} text-muted{% endif %}" for="mark-work-norm-ok">Нормоконтроль пройден</label>
+    </div>
+  </form>
+{% endif %}
+{% endblock %}

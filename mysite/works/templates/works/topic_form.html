@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="h3 mb-3 text-center">Создание темы</h1>
+<form method="post" class="form-card-panel topic-create-form">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a href="{% url 'topic_bank' %}" class="btn btn-link">Назад к банку тем</a>
+  </div>
+</form>
+{% endblock %}

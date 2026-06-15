@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block main %}
+<div class="panel">
+  <h1 class="h5">Нет файла DOCX</h1>
+  <p class="text-muted mb-3">Для работы «{{ work.name }}» не найден документ Word (.docx) для просмотра.</p>
+  <p class="mb-0"><a href="{% url 'work_detail' work.id %}">← К карточке работы</a></p>
+</div>
+{% endblock main %}

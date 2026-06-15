@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="h3 mb-2">Предложить свою тему</h1>
+<p class="text-muted mb-3">Выберите преподавателя и опишите тему — после рассмотрения вы получите уведомление.</p>
+<form method="post" class="form-card-panel">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
+    <button type="submit" class="btn btn-primary">Отправить</button>
+    <a href="{% url 'topic_bank' %}" class="btn btn-link">Назад к банку тем</a>
+  </div>
+</form>
+{% endblock %}
