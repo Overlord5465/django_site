@@ -1,0 +1,4 @@
+# Рекомендуется Python 3.10+
+Django>=4.2,<5
+psycopg2-binary>=2.9.9
+python-docx>=1.0.0
