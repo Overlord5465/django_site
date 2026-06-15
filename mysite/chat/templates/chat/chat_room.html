@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+{% load chat_extras %}
+{% load works_extras %}
+
+{% block main %}
+<div class="chat-page-wrap">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert {% if 'success' in message.tags %}alert-success{% elif 'error' in message.tags %}alert-danger{% elif 'warning' in message.tags %}alert-warning{% else %}alert-info{% endif %} mb-2" role="alert">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+<div class="chat-page-inner">
+    <div class="row chat-page-row g-3">
+        {% if students_list %}
+        <div class="col-md-4 d-flex flex-column align-self-start">
+            <div class="card chat-sidebar-card d-flex flex-column w-100">
+                <div class="card-header bg-primary text-white flex-shrink-0">
+                    <h5 class="mb-0">Мои студенты</h5>
+                </div>
+                <div class="list-group list-group-flush overflow-auto chat-sidebar-scroll">
+                    {% for student in students_list %}
+                    <a href="{% url 'chat_with_user' student.user.id %}"
+                       class="list-group-item list-group-item-action chat-sidebar-student {% if recipient == student.user %}chat-sidebar-student--selected{% endif %}">
+                        {{ student.user|user_fio }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="{% if students_list %}col-md-8{% else %}col-12{% endif %} d-flex flex-column">
+            <div class="card chat-main-card h-100 d-flex flex-column">
+                <div class="card-header bg-success text-white flex-shrink-0">
+                    <h5 class="mb-0">
+                        {% if recipient %}
+                        Чат с {{ recipient|user_fio }}
+                        {% else %}
+                        Выберите студента для чата
+                        {% endif %}
+                    </h5>
+                </div>
+
+                <div class="card-body chat-messages flex-grow-1 overflow-auto">
+                    {% if chat_messages %}
+                        {% for message in chat_messages %}
+                        {% with dkey=message.timestamp|date:"Y-m-d" %}
+                        {% ifchanged dkey %}
+                          <div class="chat-day-sep" data-date="{{ dkey }}"><span>
+                            {% if dkey == today_key %}сегодня{% elif dkey == yesterday_key %}вчера{% else %}{{ message.timestamp|chat_day_ru }}{% endif %}
+                          </span></div>
+                        {% endifchanged %}
+                        {% endwith %}
+                        <div class="mb-3 {% if message.sender == request.user %}text-end{% endif %}">
+                            <div class="d-flex {% if message.sender == request.user %}justify-content-end{% endif %}">
+                                <div class="p-3 rounded {% if message.sender == request.user %}chat-bubble-self{% else %}chat-bubble-peer{% endif %}"
+                                     style="max-width: 70%;">
+                                    <div>{% if message.content %}{{ message.content }}{% endif %}{% if message.attachment %}{% if message.content %} {% endif %}<a href="{{ message.attachment.url }}">{{ message.attachment_basename }}</a>{% endif %}</div>
+                                    <small>{{ message.timestamp|time:"H:i" }}
+                                      {% if message.sender == request.user %}
+                                        {% if message.read %}· прочитано{% endif %}
+                                        {% if message.delivered_at %}· доставлено{% endif %}
+                                      {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% elif recipient %}
+                        <p class="text-center text-muted">Нет сообщений</p>
+                    {% else %}
+                        <p class="text-center text-muted">
+                          {% if students_list %}
+                            Выберите студента для начала чата
+                          {% elif request.user.student %}
+                            {% if request.user.student.scientific_director %}
+                              Ваш научный руководитель: {{ request.user.student.scientific_director.user|user_fio }}
+                            {% else %}
+                              Назначьте научного руководителя
+                            {% endif %}
+                          {% elif request.user.user_type == 'department_admin' %}
+                            Нет студентов кафедры с назначенным научным руководителем.
+                          {% else %}
+                            Выберите студента для чата
+                          {% endif %}
+                        </p>
+                    {% endif %}
+                </div>
+
+                {% if recipient %}
+                <div class="card-footer flex-shrink-0">
+                    <form id="message-form" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" name="recipient_id" value="{{ recipient.id }}">
+                        <div class="input-group mb-2">
+                            <input type="text" name="content" class="form-control" placeholder="Сообщение...">
+                            <input type="file" name="attachment" class="form-control" style="max-width:200px;">
+                            <button type="submit" class="btn btn-primary">Отправить</button>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="{% static 'js/chat.js' %}"></script>
+{% endblock %}
